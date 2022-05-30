@@ -1,0 +1,23 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  text-align: center;
+}
+h1 {
+  text-align: center;
+  font-size: 120px;
+}
+
+.gridContainer {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border: 2px solid black;
+  width: 360px;
+  height: 360px;
+}
+
+.gridItem {
+  background-color: aqua;
+  border: 1px solid black;
+}
