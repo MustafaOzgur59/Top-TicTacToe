@@ -4,6 +4,13 @@
   box-sizing: border-box;
   text-align: center;
 }
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2vh;
+}
+
 h1 {
   text-align: center;
   font-size: 120px;
@@ -18,6 +25,10 @@ h1 {
 }
 
 .gridItem {
-  background-color: aqua;
+  background-color: rgb(71, 182, 182);
   border: 1px solid black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 100px;
 }
