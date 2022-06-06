@@ -21,18 +21,55 @@ const GameFactory = () => {
   return { setSign, getSign, reset };
 };
 
-const PlayerFactory = (player_sign) => {
-  this.sign = player_sign;
+const PlayerFactory = (playerSign) => {
+  this.sign = playerSign;
+
   const getSign = () => {
-    return sign;
+    return playerSign;
   };
+
   return { getSign };
 };
 
 const pageControllerModule = (() => {
   const playerTurnMessage = document.getElementById("turn");
-  const gridElements = document.getElementsByClassName("gridItem");
+  const gridElements = document.querySelectorAll(".gridItem");
   const restartBtn = document.getElementById("restart");
+  gridElements.forEach((element) => {
+    element.addEventListener("click", (e) => {
+      if (!gameControllerModule.getIsOver() && e.target.textContent === "") {
+        gameControllerModule.play(parseInt(e.target.dataset.order));
+      }
+      update();
+    });
+  });
+
+  restartBtn.addEventListener("click", (e) => {
+    gameControllerModule.getGame().reset();
+    gameControllerModule.resetGame();
+    update();
+    setTurnMessage("Player X's turn");
+  });
+
+  const update = () => {
+    for (let i = 0; i < gridElements.length; i++) {
+      gridElements[i].textContent = gameControllerModule.getGame().getSign(i);
+    }
+  };
+
+  const setTurnMessage = (msg) => {
+    playerTurnMessage.textContent = msg;
+  };
+
+  const setWinMessage = (win) => {
+    if (win === "Draw") {
+      setTurnMessage("It's a draw!");
+    } else {
+      setTurnMessage(`Player ${win} has won!`);
+    }
+  };
+
+  return { setTurnMessage, setWinMessage };
 })();
 
 const gameControllerModule = (() => {
@@ -43,24 +80,25 @@ const gameControllerModule = (() => {
   let isOver = false;
 
   const play = (index) => {
-    game.setSign(
-      index,
-      turnCount % 2 == 0 ? PlayerO.getSign() : PlayerX.getSign()
-    );
-    // TODO: check win
+    game.setSign(index, getCurrentPlayerSign());
     if (winCheck(index)) {
       isOver = true;
-      // TODO: change the p element inside the html to win
-
+      pageControllerModule.setWinMessage(getCurrentPlayerSign());
+      console.log("Here1");
+      return;
+    }
+    if (turnCount == 9) {
+      isOver = true;
+      pageControllerModule.setWinMessage("Draw");
+      console.log("Here2");
       return;
     } else {
-      if (turnCount == 9) {
-        isOver = true;
-        // change p element inside html to draw
-      } else {
-        turnCount++;
-        // change p element inside html to next player
-      }
+      pageControllerModule.setTurnMessage(
+        `Player ${getCurrentPlayerSign()}'s turn`
+      );
+      turnCount++;
+      console.log("Here3");
+      return;
     }
   };
   const getTurnCount = () => {
@@ -77,6 +115,10 @@ const gameControllerModule = (() => {
     return isOver;
   };
 
+  const getCurrentPlayerSign = () => {
+    return turnCount % 2 === 1 ? PlayerX.getSign() : PlayerO.getSign();
+  };
+
   const winCheck = (clickedIndex) => {
     winConds = [
       [0, 1, 2],
@@ -89,15 +131,16 @@ const gameControllerModule = (() => {
       [2, 4, 6],
     ];
     return winConds
-      .filter((possibleCond) => {
-        possibleCond.includes(clickedIndex);
-      })
-      .some((possibleCond2) => {
-        possibleCond2.every((index) => {
-          game.getSign(index) ===
-            (turnCount % 2 == 0 ? PlayerO.getSign() : PlayerX.getSign());
-        });
-      });
+      .filter((comb) => comb.includes(clickedIndex))
+      .some((possibleWin) =>
+        possibleWin.every(
+          (index) => game.getSign(index) === getCurrentPlayerSign()
+        )
+      );
   };
-  return { play, getIsOver, resetGame };
+
+  const getGame = () => {
+    return game;
+  };
+  return { play, getIsOver, resetGame, getGame };
 })();
