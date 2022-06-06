@@ -29,7 +29,11 @@ const PlayerFactory = (player_sign) => {
   return { getSign };
 };
 
-const pageControllerModule = (() => {})();
+const pageControllerModule = (() => {
+  const playerTurnMessage = document.getElementById("turn");
+  const gridElements = document.getElementsByClassName("gridItem");
+  const restartBtn = document.getElementById("restart");
+})();
 
 const gameControllerModule = (() => {
   const game = GameFactory();
